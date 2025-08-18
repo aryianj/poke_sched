@@ -5,7 +5,7 @@ import './App.css'
 function App() {
   const [rows, setRows] = useState( Array.from({ length: 29 }, (_, i) => ({
     id: i + 1,
-    name: '',
+    item_name: '',
     amount: 1,
     cost: 1,
   })));
