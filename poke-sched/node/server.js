@@ -37,3 +37,5 @@ app.use(express.static(__dirname));
 app.listen(port, () => {
   console.log(`Node server running on port ${port}`);
 });
+
+export default app;
