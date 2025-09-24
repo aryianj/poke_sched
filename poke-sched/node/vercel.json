@@ -1,18 +1,11 @@
 {
   "functions": {
     "api/server.js": {
-      "runtime": "nodejs20.x",
-      "includeFiles": [
-        "index.html",
-        "public/**",
-        "config/**",
-        "controller/**",
-        "routes/**"
-      ]
+      "runtime": "nodejs20.x"
     }
   },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/server.js" },
-    { "source": "/(.*)", "destination": "/api/server.js" }
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
