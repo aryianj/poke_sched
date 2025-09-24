@@ -3,12 +3,21 @@ import { useEffect, useState } from 'react'
 import './App.css'
 
 function App() {
-  const [rows, setRows] = useState( Array.from({ length: 29 }, (_, i) => ({
+  const password = import.meta.env.VITE_PASSWORD;
+  const [login, setLogin] = useState(false);
+  function passwordCheck(e) {
+    if (e === password) {
+      setLogin(true);
+    }
+  }
+
+  const [rows, setRows] = useState(Array.from({ length: 29 }, (_, i) => ({
     id: i + 1,
     item_name: '',
     amount: 1,
-    cost: 1,
+    cost: 0,
   })));
+
 
   const updateRow = (index, field, value) => {
     const updated = [...rows];
@@ -29,7 +38,18 @@ function App() {
   
   return (
     <>
-      <div className='min-w-xs max-h-screen m-4'>
+    {!login &&
+      <div className='absolute w-screen h-screen bg-white justify-center items-center flex flex-col'>
+        <h1 className='text-2xl mb-1'>Login</h1>
+        <div className="flex">
+          <input type="password" name="password" id="password" className='border-2 p-2' placeholder='Password' />
+          <button className='border-2 border-l-0 p-2' type="button" onClick={() => passwordCheck(document.getElementById('password').value)}>Submit</button>
+        </div>
+      </div>
+    }
+    {
+      login &&
+        <div className='min-w-xs max-h-screen m-4'>
         <div className='flex justify-between items-center mb-4'>
           <h1 className='text-6xl'>Póke Profit Tracker</h1>
           <button className='border rounded-full p-2 h-1/2' type="button" onClick={() => addRow()}>Add a Row</button>
@@ -72,7 +92,12 @@ function App() {
             })}
           </tbody>
         </table>
+
       </div>
+    }
+      {/*
+    
+        */}
     </>
   )
 }

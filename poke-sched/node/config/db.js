@@ -1,31 +1,20 @@
-const { MongoClient } = require('mongodb');
+import 'dotenv/config';
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
-const MONGODB_URI = process.env.MONGODB_URI;
-const client = new MongoClient(MONGODB_URI);
-let db;
-
-async function connectToMongo() {
-    try {
-        await client.connect();
-        console.log('Successfully connected to MongoDB');
-        db = client.db('users');
-        return db;
-    } catch (error) {
-        console.error('MongoDB connection error:', error);
-        throw error;
-    }
-}
-
-function getDb() {
-    return db;
-}
-
-function getClient() {
-    return client;
-}
-
-module.exports = {
-    connectToMongo,
-    getDb,
-    getClient
+const firebaseConfig = {
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID
 };
+
+const app = initializeApp(firebaseConfig);
+
+export function getDb() {
+  const db = getFirestore(app);
+  return db;
+}
+

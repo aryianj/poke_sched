@@ -1,50 +1,39 @@
-const express = require('express');
-const session = require('express-session');
-const path = require('path');
-const cors = require('cors');
-const axios = require('axios');
-const { connectToMongo, getClient } = require('./config/db');
-const userRoutes = require('./routes/userRoutes');
+import 'dotenv/config';
+import express from 'express';
+import session from 'express-session';
+import path, { dirname } from 'path';
+import cors from 'cors';
+import { fileURLToPath } from 'url';
+import { getDb } from './config/db.js';
+import makeTrackerRouter from './routes/trackerRoute.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-connectToMongo();
-
 app.use(cors({
-    origin: '*', 
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-const MongoStore = require('connect-mongo');
 app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({
-        mongoUrl: process.env.MONGODB_URI, 
-        ttl: 24 * 60 * 60
-    })
+  secret: process.env.SESSION_SECRET || 'change-me',
+  resave: false,
+  saveUninitialized: false
 }));
 
 app.use(express.json());
 
-app.use('/api/users', userRoutes);
+// Firestore
+const db = getDb();
+app.use('/api/tracker', makeTrackerRouter(db));
 
-
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-process.on('SIGINT', async () => {
-    await getClient().close();
-    process.exit();
-});
+// Serve static from ../public (project root)
+app.use(express.static(__dirname));
 
 app.listen(port, () => {
-    console.log(`Node server running on port ${port}`);
-    console.log(`Python service URL: ${process.env.PYTHON_SERVICE_URL || 'http://localhost:5000'}`);
+  console.log(`Node server running on port ${port}`);
 });
